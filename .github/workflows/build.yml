@@ -11,15 +11,22 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Extract Project Zip
+      - name: Extract Project Zip & Fix Hidden Files
         run: |
-          unzip -o ms-companion.zip -d extracted_temp
-          # Yeh command settings.gradle.kts ko dhoondhegi aur saari files root me laa degi
-          PROJECT_ROOT=$(dirname $(find extracted_temp -name "settings.gradle.kts" | head -n 1))
+          unzip -o ms-companion.zip -d temp_extract
+          
+          # Root directory setup with normal and hidden files (.env.example, etc)
+          PROJECT_ROOT=$(dirname $(find temp_extract -name "settings.gradle.kts" | head -n 1))
+          
           if [ -n "$PROJECT_ROOT" ]; then
             cp -r $PROJECT_ROOT/* . 2>/dev/null || true
+            cp -r $PROJECT_ROOT/.* . 2>/dev/null || true
           fi
-          rm -rf extracted_temp ms-companion.zip
+          
+          rm -rf temp_extract ms-companion.zip
+
+      - name: Create Failsafe .env.example
+        run: touch .env.example
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -31,7 +38,6 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
 
       - name: Build Debug APK
-        # Bina gradlew ke direct inbuilt system gradle command use karenge
         run: gradle assembleDebug
 
       - name: Upload APK Artifact
