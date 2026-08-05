@@ -41,7 +41,7 @@ jobs:
                 "client_info": {
                   "mobilesdk_app_id": "1:123456789:android:abcdef",
                   "android_client_info": { 
-                    "package_name": "com.aistudio.mscompanion.sumit" 
+                    "package_name": "com.aistudio.xoai.companion" 
                   }
                 },
                 "api_key": [ { "current_key": "dummy-key" } ]
