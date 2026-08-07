@@ -1,4 +1,4 @@
-Name: Build Android APK
+name: Build Android APK
 
 on:
   push:
@@ -13,7 +13,6 @@ jobs:
 
       - name: Extract Project Zip & Fix Hidden Files
         run: |
-          # Zip file name fixed to match xo-ai.zip
           unzip -o xo-ai.zip -d temp_extract
           
           PROJECT_ROOT=$(dirname $(find temp_extract -name "settings.gradle.kts" -o -name "settings.gradle" | head -n 1))
@@ -82,3 +81,4 @@ jobs:
         with:
           name: app-debug
           path: app/build/outputs/apk/debug/app-debug.apk
+          
