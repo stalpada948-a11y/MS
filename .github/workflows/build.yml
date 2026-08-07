@@ -1,4 +1,4 @@
-name: Build Android APK
+Name: Build Android APK
 
 on:
   push:
@@ -13,7 +13,9 @@ jobs:
 
       - name: Extract Project Zip & Fix Hidden Files
         run: |
-          unzip -o xo-ai(1).zip -d temp_extract
+          # Handles spaces in 'xo-ai (1).zip' or fallback to any .zip file
+          ZIP_FILE=$(ls *.zip | head -n 1)
+          unzip -o "$ZIP_FILE" -d temp_extract
           
           PROJECT_ROOT=$(dirname $(find temp_extract -name "settings.gradle.kts" -o -name "settings.gradle" | head -n 1))
           
@@ -22,7 +24,10 @@ jobs:
             cp -r $PROJECT_ROOT/.* . 2>/dev/null || true
           fi
           
-          rm -rf temp_extract xo-ai.zip
+          rm -rf temp_extract *.zip
+
+      - name: Grant Execute Permissions for Gradle Wrapper
+        run: chmod +x gradlew || true
 
       - name: Create Failsafe .env.example
         run: touch .env.example
@@ -74,7 +79,12 @@ jobs:
         env:
           GRADLE_OPTS: "-Djava.awt.headless=true"
           JAVA_TOOL_OPTIONS: "-Djava.awt.headless=true"
-        run: gradle assembleDebug --no-daemon -Djava.awt.headless=true
+        run: |
+          if [ -f "./gradlew" ]; then
+            ./gradlew assembleDebug --no-daemon -Djava.awt.headless=true
+          else
+            gradle assembleDebug --no-daemon -Djava.awt.headless=true
+          fi
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
