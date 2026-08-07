@@ -59,10 +59,14 @@ jobs:
           keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
           cp debug.keystore app/debug.keystore 2>/dev/null || true
 
-      - name: Configure Gradle for KSP Compatibility
+      - name: Configure Gradle and Fix KSP Daemon
         run: |
-          echo "org.gradle.jvmargs=-Xmx3072m -Dfile.encoding=UTF-8" >> gradle.properties
-          echo "android.useAndroidX=true" >> gradle.properties
+          cat <<EOF > gradle.properties
+          org.gradle.jvmargs=-Xmx3072m -Djava.awt.headless=true -Dfile.encoding=UTF-8
+          android.useAndroidX=true
+          ksp.use.worker.api=true
+          ksp.incremental=false
+          EOF
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -76,9 +80,9 @@ jobs:
       - name: Build Debug APK
         run: |
           if [ -f "./gradlew" ]; then
-            ./gradlew assembleDebug --stacktrace
+            ./gradlew assembleDebug --no-daemon --stacktrace
           else
-            gradle assembleDebug --stacktrace
+            gradle assembleDebug --no-daemon --stacktrace
           fi
 
       - name: Upload APK Artifact
@@ -86,3 +90,4 @@ jobs:
         with:
           name: app-debug
           path: app/build/outputs/apk/debug/app-debug.apk
+          
