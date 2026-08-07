@@ -13,7 +13,7 @@ jobs:
 
       - name: Extract Project Zip & Fix Hidden Files
         run: |
-          unzip -o xo-ai.zip -d temp_extract
+          unzip -o xo-ai(1).zip -d temp_extract
           
           PROJECT_ROOT=$(dirname $(find temp_extract -name "settings.gradle.kts" -o -name "settings.gradle" | head -n 1))
           
