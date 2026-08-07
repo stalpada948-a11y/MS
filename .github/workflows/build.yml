@@ -1,4 +1,4 @@
-name: Build Android APK
+Name: Build Android APK
 
 on:
   push:
@@ -13,7 +13,8 @@ jobs:
 
       - name: Extract Project Zip & Fix Hidden Files
         run: |
-          unzip -o xo-ai-assistant.zip -d temp_extract
+          # Zip file name fixed to match xo-ai.zip
+          unzip -o xo-ai.zip -d temp_extract
           
           PROJECT_ROOT=$(dirname $(find temp_extract -name "settings.gradle.kts" -o -name "settings.gradle" | head -n 1))
           
@@ -22,7 +23,7 @@ jobs:
             cp -r $PROJECT_ROOT/.* . 2>/dev/null || true
           fi
           
-          rm -rf temp_extract xo-ai-assistant.zip
+          rm -rf temp_extract xo-ai.zip
 
       - name: Create Failsafe .env.example
         run: touch .env.example
